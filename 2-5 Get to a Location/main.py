@@ -13,6 +13,7 @@ class Point:
     def __str__(self):
         return f"({self.x}, {self.y})"
 
+
 # Main program
 # Read in x and y for Point P
 p = Point()
@@ -26,10 +27,20 @@ step_y = int(input())
 # Read in num of steps to be taken (backwards) every 3 steps
 step_back = int(input())
 
+
 # Write dynamic programming algorithm
+def step_along(point, target, step_x, step_y, step_back):
+
+    for _ in range(5):
+        point.x += step_x
+        point.y += step_y
+        print(point)
+
 
 # Output
 print(f"Point P: {p}")
+
+step_along(Point(), p, step_x, step_y, step_back)
 
 # TODO: REMOVE ME
 print(f"Steps along X Axis: {step_x}")
