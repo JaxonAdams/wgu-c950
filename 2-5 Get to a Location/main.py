@@ -14,6 +14,20 @@ class Point:
         return f"({self.x}, {self.y})"
 
 
+class DistanceTracker:
+    def __init__(self, target):
+        self.distances = []
+        self.target = target
+
+    def calc_distance(self, p):
+        return math.sqrt(abs((p.x - self.target.x)**2 + (p.y - self.target.y)**2))
+    
+    def add_point(self, point):
+        self.distances.append(self.calc_distance(point))
+        if len(self.distances) > 3:
+            self.distances = self.distances[1:]
+
+
 # Main program
 # Read in x and y for Point P
 p = Point()
@@ -31,6 +45,7 @@ step_back = int(input())
 # Write dynamic programming algorithm
 def step_along(point, target, step_x, step_y, step_back):
 
+    tracker = DistanceTracker(target)
     for i in range(5):
         if i % 3 == 2:  # triggers every three iterations
             # step back by the specified amount
@@ -40,7 +55,8 @@ def step_along(point, target, step_x, step_y, step_back):
             # step forward by the specified amount
             point.x += step_x
             point.y += step_y
-        print(point)
+        tracker.add_point(point)
+        print(tracker.distances)
 
 
 # Output
