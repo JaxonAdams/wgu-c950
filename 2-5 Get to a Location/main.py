@@ -10,6 +10,9 @@ class Point:
         self.x = 0
         self.y = 0
 
+    def as_tuple(self):
+        return (self.x, self.y)
+
     def __str__(self):
         return f"({self.x}, {self.y})"
 
@@ -23,7 +26,7 @@ class DistanceTracker:
         return math.sqrt(abs((p.x - self.target.x)**2 + (p.y - self.target.y)**2))
     
     def add_point(self, point, iteration):
-        self.distances.append((self.calc_distance(point), iteration))
+        self.distances.append((self.calc_distance(point), iteration, point.as_tuple()))
         if len(self.distances) > 3:
             self.distances = self.distances[1:]
 
@@ -68,19 +71,15 @@ def step_along(point, target, step_x, step_y, step_back):
         tracker.add_point(point, i+1)
         
         if tracker.is_increasing():
-            return min(tracker.distances)
-        
+            return min(tracker.distances, key=lambda x: x[0])
+
         i += 1
 
 
 # Output
 print(f"Point P: {p}")
 
-smallest_dist, iteration = step_along(Point(), p, step_x, step_y, step_back)
-print(smallest_dist, iteration)
-
-# TODO: REMOVE ME
-print(f"Steps along X Axis: {step_x}")
-print(f"Steps along Y Axis: {step_y}")
-print(f"Steps taken backwards: {step_back}")
-# TODO: REMOVE ME
+smallest_dist, iteration, point = step_along(Point(), p, step_x, step_y, step_back)
+print(f"Arrival point: {point}")
+print(f"Distance between P and arrival: {smallest_dist}")
+print(f"Number of iterations: {iteration}")
