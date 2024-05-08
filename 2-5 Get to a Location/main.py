@@ -27,6 +27,12 @@ class DistanceTracker:
         if len(self.distances) > 3:
             self.distances = self.distances[1:]
 
+    def is_increasing(self):
+        if len(self.distances) < 3:
+            return False
+
+        return self.distances[0] < self.distances[1] < self.distances[2]
+
 
 # Main program
 # Read in x and y for Point P
@@ -46,7 +52,10 @@ step_back = int(input())
 def step_along(point, target, step_x, step_y, step_back):
 
     tracker = DistanceTracker(target)
-    for i in range(5):
+    
+    i = 0
+    while True:
+        
         if i % 3 == 2:  # triggers every three iterations
             # step back by the specified amount
             point.x -= step_back
@@ -55,14 +64,20 @@ def step_along(point, target, step_x, step_y, step_back):
             # step forward by the specified amount
             point.x += step_x
             point.y += step_y
+        
         tracker.add_point(point)
-        print(tracker.distances)
+        
+        if tracker.is_increasing():
+            return min(tracker.distances)
+        
+        i += 1
 
 
 # Output
 print(f"Point P: {p}")
 
-step_along(Point(), p, step_x, step_y, step_back)
+smallest_dist = step_along(Point(), p, step_x, step_y, step_back)
+print(smallest_dist)
 
 # TODO: REMOVE ME
 print(f"Steps along X Axis: {step_x}")
