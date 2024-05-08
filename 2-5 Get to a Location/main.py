@@ -31,9 +31,15 @@ step_back = int(input())
 # Write dynamic programming algorithm
 def step_along(point, target, step_x, step_y, step_back):
 
-    for _ in range(5):
-        point.x += step_x
-        point.y += step_y
+    for i in range(5):
+        if i % 3 == 2:  # triggers every three iterations
+            # step back by the specified amount
+            point.x -= step_back
+            point.y -= step_back
+        else:
+            # step forward by the specified amount
+            point.x += step_x
+            point.y += step_y
         print(point)
 
 
