@@ -22,8 +22,8 @@ class DistanceTracker:
     def calc_distance(self, p):
         return math.sqrt(abs((p.x - self.target.x)**2 + (p.y - self.target.y)**2))
     
-    def add_point(self, point):
-        self.distances.append(self.calc_distance(point))
+    def add_point(self, point, iteration):
+        self.distances.append((self.calc_distance(point), iteration))
         if len(self.distances) > 3:
             self.distances = self.distances[1:]
 
@@ -31,7 +31,7 @@ class DistanceTracker:
         if len(self.distances) < 3:
             return False
 
-        return self.distances[0] < self.distances[1] < self.distances[2]
+        return self.distances[0][0] <= self.distances[1][0] <= self.distances[2][0]
 
 
 # Main program
@@ -65,7 +65,7 @@ def step_along(point, target, step_x, step_y, step_back):
             point.x += step_x
             point.y += step_y
         
-        tracker.add_point(point)
+        tracker.add_point(point, i+1)
         
         if tracker.is_increasing():
             return min(tracker.distances)
@@ -76,8 +76,8 @@ def step_along(point, target, step_x, step_y, step_back):
 # Output
 print(f"Point P: {p}")
 
-smallest_dist = step_along(Point(), p, step_x, step_y, step_back)
-print(smallest_dist)
+smallest_dist, iteration = step_along(Point(), p, step_x, step_y, step_back)
+print(smallest_dist, iteration)
 
 # TODO: REMOVE ME
 print(f"Steps along X Axis: {step_x}")
