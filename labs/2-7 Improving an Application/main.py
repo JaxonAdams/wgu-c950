@@ -5,8 +5,10 @@ import sys
 # process runtimes from the file with the given
 # filename.
 def load_data(filename):
-    # TO-DO: implement the function
-    return 0, []
+    with open(filename) as f:
+        lines = [int(line) for line in f.readlines()]
+
+    return lines[0], lines[1:]
 
 # A scheduler that assigns the next process with the shortest processing time.
 # The next-available processor is assigned.
