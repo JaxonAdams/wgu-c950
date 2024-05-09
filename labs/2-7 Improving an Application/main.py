@@ -19,8 +19,12 @@ def shortest_process_first_scheduler(processes, processors):
 # A scheduler that assigns processes in the order they are
 # presented, to the first available processor
 def first_come_first_served_scheduler(processes, processors):
-    # TO-DO: complete the function
-    return 0, 0
+
+    # print(processors)
+    selected_processor = processors.index(min(processors))
+    # print(selected_processor)
+
+    return 0, processors.index(min(processors))
 
 # A program that runs the simulation using three different
 # schedulers, and displays the wait time statistics for
@@ -28,6 +32,7 @@ def first_come_first_served_scheduler(processes, processors):
 if __name__ == "__main__":
 
     num_processors, processes = load_data(sys.argv[1])
+    print(num_processors)
                 
     print("SIM 1: random scheduler")            
     processes_copy = [ x for x in processes ]
