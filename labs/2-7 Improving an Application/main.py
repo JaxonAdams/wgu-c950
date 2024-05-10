@@ -13,16 +13,12 @@ def load_data(filename):
 # A scheduler that assigns the next process with the shortest processing time.
 # The next-available processor is assigned.
 def shortest_process_first_scheduler(processes, processors):
-    # TO-DO: complete the function
-    return 0, 0
+
+    return processes.index(min(processes)), processors.index(min(processors))
             
 # A scheduler that assigns processes in the order they are
 # presented, to the first available processor
 def first_come_first_served_scheduler(processes, processors):
-
-    # print(processors)
-    selected_processor = processors.index(min(processors))
-    # print(selected_processor)
 
     return 0, processors.index(min(processors))
 
