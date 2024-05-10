@@ -28,7 +28,6 @@ def first_come_first_served_scheduler(processes, processors):
 if __name__ == "__main__":
 
     num_processors, processes = load_data(sys.argv[1])
-    print(num_processors)
                 
     print("SIM 1: random scheduler")            
     processes_copy = [ x for x in processes ]
