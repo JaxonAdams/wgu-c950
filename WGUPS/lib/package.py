@@ -20,10 +20,14 @@ class Package:
         self.deadline = deadline
         self.status = "AT THE HUB"
 
+    # custom string representation of a package instance
+    def __repr__(self):
+        
+        return f"<Package {self.id}, status={self.status}>"
+
     
 # !---------------------------------------------------------------------------
 if __name__ == "__main__":
 
     pkg = Package(1, "123 Sesame Street", "Eagle Mountain", 84005, "3lbs", "12:30")
-    print(pkg.address)
-    print(pkg.deadline)
+    print(pkg)
