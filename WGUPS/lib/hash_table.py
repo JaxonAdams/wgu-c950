@@ -1,7 +1,10 @@
-"""An implementation of a hash table. Uses chaining to handle collisions."""
+"""An implementation of a hash table. This implementation uses chaining to
+handle collisions.
+"""
 
 
 from package import Package
+
 
 class HashTable:
 
@@ -55,6 +58,18 @@ class HashTable:
         if self._load_factor() >= self._resize_threshold:
             self._resize(self.size * 2)
 
+    # lookup function -- takes a package id as input and returns the package
+    def lookup(self, key):
+        """Lookup the entry associated with the given key."""
+
+        bucket_index = hash(key) % self.size
+        # run a linear search on the bucket's list
+        for package in self.table[bucket_index]:
+            if package.id == key:
+                return package
+        
+        return False  # not found
+
 
 # !---------------------------------------------------------------------------
 if __name__ == "__main__":
@@ -69,3 +84,6 @@ if __name__ == "__main__":
         package_table.insert(new_pkg.id, new_pkg)
 
     print(package_table.table)
+
+    pkg = package_table.lookup("4")
+    print(pkg)
