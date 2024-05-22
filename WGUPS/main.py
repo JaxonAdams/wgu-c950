@@ -38,7 +38,7 @@ class Simulation:
         with open(filepath, encoding="utf-8") as f:
             reader = csv.reader(f)
 
-            header_row = next(reader)
+            next(reader)  # remove the header row -- we don't need it processed
 
             distance_matrix.extend(row[1:] for row in reader)
 
@@ -49,21 +49,44 @@ class Simulation:
         load each package into a hash table.
         """
 
-        pass
+        package_hash = HashTable()
+        with open(filepath, encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+
+            for row in reader:
+                package = Package(
+                    row["Package ID"],
+                    row["Address"],
+                    "UT",
+                    row["Zip"],
+                    row["Weight KILO"],
+                    row["Delivery Deadline"],
+                )
+
+                package_hash.insert(package.id, package)
+
+        return package_hash
 
     def run(self):
 
         print("Hello, world!")
-        print(self.distance_matrix)
+        # print(self.distance_matrix)
 
-        print("HUB DISTANCE FROM HUB:", end=" ")
-        print(self.distance_matrix[0][0])  # 0
+        # print("HUB DISTANCE FROM HUB:", end=" ")
+        # print(self.distance_matrix[0][0])  # 0
 
-        print("ROW 4 DISTANCE FROM HUB:", end=" ")
-        print(self.distance_matrix[3][0])  # 11
+        # print("ROW 4 DISTANCE FROM HUB:", end=" ")
+        # print(self.distance_matrix[3][0])  # 11
 
-        print("ROW 12 DISTANCE FROM ROW 7:", end=" ")
-        print(self.distance_matrix[11][6])  # 6.9
+        # print("ROW 12 DISTANCE FROM ROW 7:", end=" ")
+        # print(self.distance_matrix[11][6])  # 6.9
+
+        print(self.packages)
+
+        print("Package 1: ", self.packages.lookup("1"))
+        print("    Address: ", self.packages.lookup("1").address)
+        print("Package 12:", self.packages.lookup("12"))
+        print("    Address: ", self.packages.lookup("12").address)
 
 
 # !---------------------------------------------------------------------------
