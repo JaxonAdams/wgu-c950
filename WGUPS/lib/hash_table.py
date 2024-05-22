@@ -3,9 +3,6 @@ handle collisions.
 """
 
 
-from package import Package
-
-
 class HashTable:
 
     # initialize instance attributes
@@ -78,12 +75,3 @@ if __name__ == "__main__":
     package_table = HashTable()
     print(package_table)
     print(package_table.table)
-
-    for i in range(8):
-        new_pkg = Package(str(i+1), "123 Sesame Street", "Eagle Mountain", "84005", 12, "14:00")
-        package_table.insert(new_pkg.id, new_pkg)
-
-    print(package_table.table)
-
-    pkg = package_table.lookup("4")
-    print(pkg)
