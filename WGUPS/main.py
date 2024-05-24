@@ -14,6 +14,7 @@ Student ID: 011441603
 
 import csv
 
+from lib.truck import Truck
 from lib.package import Package
 from lib.hash_table import HashTable
 
@@ -25,14 +26,24 @@ class Simulation:
 
     def __init__(self, packages_path=None, distances_path=None):
     
-        # trucks will make three trips total
-        self.first_trip = []
-        self.second_trip = []
-        self.third_trip = []
-
         # load data files
         self.distance_matrix = self._load_distance_matrix(distances_path)
         self.packages = self._load_packages(packages_path)
+
+        # trucks -- three available in this project
+        self.truck1 = Truck(id=1)
+        self.truck2 = Truck(id=2)
+        self.truck3 = Truck(id=3)
+
+        # package load order -- hardcoded for this project
+        # first 16 is picked up by the first truck; second 16 by
+        #   the second truck, etc.
+        self.package_load_order = [
+            '1', '4', '11', '14', '15', '16', '17', '19', '20', '21', '22',
+            '24', '26', '31', '34', '40', '2', '3', '5', '7', '8', '10',
+            '13', '18', '27', '29', '30', '35', '36', '37', '38', '39', '6',
+            '9', '12', '23', '25', '28', '32', '33',
+        ]
 
 
     def _load_distance_matrix(self, filepath):
@@ -71,20 +82,26 @@ class Simulation:
 
                 package_hash.insert(package.id, package)
 
-                if row["Trip"] == "1":
-                    self.first_trip.append(package.id)
-                elif row["Trip"] == "2":
-                    self.second_trip.append(package.id)
-                elif row["Trip"] == "3":
-                    self.third_trip.append(package.id)
-
         return package_hash
+
+    def load_truck(self, truck, package_list):
+        """Load the given truck with a group of packages."""
+
+        for package_id in package_list:
+            truck.load_package(package_id)
 
     def run(self):
 
-        print(self.first_trip, len(self.first_trip))
-        print(self.second_trip, len(self.second_trip))
-        print(self.third_trip, len(self.third_trip))
+        # load trucks
+        self.load_truck(self.truck1, self.package_load_order[:16])
+        del self.package_load_order[:16]
+
+        self.load_truck(self.truck2, self.package_load_order[:16])
+        del self.package_load_order[:16]
+
+        print(self.truck1)
+        print(self.truck2)
+        print(self.truck3)
 
 
 # !---------------------------------------------------------------------------
