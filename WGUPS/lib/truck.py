@@ -12,10 +12,21 @@ class Truck:
 
         self.speed = 18  # avg 18 mph
         self.capacity = 16
+
+        self.packages = []
     
     def __repr__(self):
 
-        return f"<Truck {self.id}>"
+        return f"<Truck {self.id}, load={len(self.packages)}, cap={self.capacity}>"
+
+    def load_package(self, package_id):
+        """Load a package onto the truck for delivery."""
+
+        if len(self.packages) <= self.capacity:
+            self.packages.append(package_id)
+        else:
+            # truck is full; cannot load another package
+            return False
 
 
 # !---------------------------------------------------------------------------

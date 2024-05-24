@@ -14,6 +14,7 @@ Student ID: 011441603
 
 import csv
 
+from lib.truck import Truck
 from lib.package import Package
 from lib.hash_table import HashTable
 
@@ -33,6 +34,9 @@ class Simulation:
         # load data files
         self.distance_matrix = self._load_distance_matrix(distances_path)
         self.packages = self._load_packages(packages_path)
+
+        # trucks -- three available in this project
+        self.trucks = [Truck(id=i) for i in range(1, 4)]
 
 
     def _load_distance_matrix(self, filepath):
@@ -80,11 +84,18 @@ class Simulation:
 
         return package_hash
 
+    def load_truck(self, truck, package_list):
+        """Load the given truck with a group of packages."""
+
+        for package_id in package_list:
+            truck.load_package(package_id)
+
     def run(self):
 
-        print(self.first_trip, len(self.first_trip))
-        print(self.second_trip, len(self.second_trip))
-        print(self.third_trip, len(self.third_trip))
+        print(self.trucks)
+        self.load_truck(self.trucks[0], self.first_trip)
+        self.load_truck(self.trucks[1], self.second_trip)
+        print(self.trucks)
 
 
 # !---------------------------------------------------------------------------
