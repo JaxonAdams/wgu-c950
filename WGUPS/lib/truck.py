@@ -14,7 +14,8 @@ class Truck:
         self.capacity = 16
 
         self.packages = []
-    
+        self.route = []
+
     def __repr__(self):
 
         return f"<Truck {self.id}, load={len(self.packages)}, cap={self.capacity}>"
@@ -27,6 +28,18 @@ class Truck:
         else:
             # truck is full; cannot load another package
             return False
+
+    def plot_delivery_route(self, package_table):
+        """Plot a delivery route to deliver all loaded packages."""
+
+        # load addresses which we'll deliver to
+        unvisited_addr = []
+        for pkg_id in self.packages:
+            
+            package = package_table.lookup(pkg_id)
+            unvisited_addr.append(package.address)
+
+        print(unvisited_addr)
 
 
 # !---------------------------------------------------------------------------

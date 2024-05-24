@@ -99,9 +99,9 @@ class Simulation:
         self.load_truck(self.truck2, self.package_load_order[:16])
         del self.package_load_order[:16]
 
-        print(self.truck1)
-        print(self.truck2)
-        print(self.truck3)
+        # plot truck delivery routes
+        self.truck1.plot_delivery_route(self.packages)
+        self.truck2.plot_delivery_route(self.packages)
 
 
 # !---------------------------------------------------------------------------
