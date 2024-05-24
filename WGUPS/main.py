@@ -25,9 +25,15 @@ class Simulation:
 
     def __init__(self, packages_path=None, distances_path=None):
     
+        # trucks will make three trips total
+        self.first_trip = []
+        self.second_trip = []
+        self.third_trip = []
+
         # load data files
         self.distance_matrix = self._load_distance_matrix(distances_path)
         self.packages = self._load_packages(packages_path)
+
 
     def _load_distance_matrix(self, filepath):
         """Read the given file for a matrix of distances between delivery
@@ -65,28 +71,20 @@ class Simulation:
 
                 package_hash.insert(package.id, package)
 
+                if row["Trip"] == "1":
+                    self.first_trip.append(package.id)
+                elif row["Trip"] == "2":
+                    self.second_trip.append(package.id)
+                elif row["Trip"] == "3":
+                    self.third_trip.append(package.id)
+
         return package_hash
 
     def run(self):
 
-        print("Hello, world!")
-        # print(self.distance_matrix)
-
-        # print("HUB DISTANCE FROM HUB:", end=" ")
-        # print(self.distance_matrix[0][0])  # 0
-
-        # print("ROW 4 DISTANCE FROM HUB:", end=" ")
-        # print(self.distance_matrix[3][0])  # 11
-
-        # print("ROW 12 DISTANCE FROM ROW 7:", end=" ")
-        # print(self.distance_matrix[11][6])  # 6.9
-
-        print(self.packages)
-
-        print("Package 1: ", self.packages.lookup("1"))
-        print("    Address: ", self.packages.lookup("1").address)
-        print("Package 12:", self.packages.lookup("12"))
-        print("    Address: ", self.packages.lookup("12").address)
+        print(self.first_trip, len(self.first_trip))
+        print(self.second_trip, len(self.second_trip))
+        print(self.third_trip, len(self.third_trip))
 
 
 # !---------------------------------------------------------------------------
