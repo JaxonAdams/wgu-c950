@@ -14,6 +14,7 @@ Student ID: 011441603
 
 import csv
 
+from lib.truck import Truck
 from lib.package import Package
 from lib.hash_table import HashTable
 
@@ -26,8 +27,25 @@ class Simulation:
     def __init__(self, packages_path=None, distances_path=None):
     
         # load data files
+        self.addresses = []
         self.distance_matrix = self._load_distance_matrix(distances_path)
         self.packages = self._load_packages(packages_path)
+
+        # trucks -- three available in this project
+        self.truck1 = Truck(id=1, address_list=self.addresses, distance_matrix=self.distance_matrix)
+        self.truck2 = Truck(id=2, address_list=self.addresses, distance_matrix=self.distance_matrix)
+        self.truck3 = Truck(id=3, address_list=self.addresses, distance_matrix=self.distance_matrix)
+
+        # package load order -- hardcoded for this project
+        # first 16 is picked up by the first truck; second 16 by
+        #   the second truck, etc.
+        self.package_load_order = [
+            '1', '4', '11', '14', '15', '16', '17', '19', '20', '21', '22',
+            '24', '26', '31', '34', '40', '2', '3', '5', '7', '8', '10',
+            '13', '18', '27', '29', '30', '35', '36', '37', '38', '39', '6',
+            '9', '12', '23', '25', '28', '32', '33',
+        ]
+
 
     def _load_distance_matrix(self, filepath):
         """Read the given file for a matrix of distances between delivery
@@ -38,7 +56,7 @@ class Simulation:
         with open(filepath, encoding="utf-8") as f:
             reader = csv.reader(f)
 
-            next(reader)  # remove the header row -- we don't need it processed
+            self.addresses = next(reader)[1:]
 
             distance_matrix.extend(row[1:] for row in reader)
 
@@ -67,26 +85,27 @@ class Simulation:
 
         return package_hash
 
+    def load_truck(self, truck, package_list):
+        """Load the given truck with a group of packages."""
+
+        for package_id in package_list:
+            truck.load_package(package_id)
+
     def run(self):
 
-        print("Hello, world!")
-        # print(self.distance_matrix)
+        # load trucks
+        self.load_truck(self.truck1, self.package_load_order[:16])
+        del self.package_load_order[:16]
 
-        # print("HUB DISTANCE FROM HUB:", end=" ")
-        # print(self.distance_matrix[0][0])  # 0
+        self.load_truck(self.truck2, self.package_load_order[:16])
+        del self.package_load_order[:16]
 
-        # print("ROW 4 DISTANCE FROM HUB:", end=" ")
-        # print(self.distance_matrix[3][0])  # 11
+        # plot truck delivery routes
+        length = self.truck1.plot_delivery_route(self.packages)
+        length2 = self.truck2.plot_delivery_route(self.packages)
 
-        # print("ROW 12 DISTANCE FROM ROW 7:", end=" ")
-        # print(self.distance_matrix[11][6])  # 6.9
-
-        print(self.packages)
-
-        print("Package 1: ", self.packages.lookup("1"))
-        print("    Address: ", self.packages.lookup("1").address)
-        print("Package 12:", self.packages.lookup("12"))
-        print("    Address: ", self.packages.lookup("12").address)
+        print(f"Truck 1 Distance Traveled: {length}")
+        print(f"Truck 2 Distance Traveled: {length2}")
 
 
 # !---------------------------------------------------------------------------
