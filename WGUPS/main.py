@@ -13,6 +13,7 @@ Student ID: 011441603
 
 
 import csv
+import queue
 
 from lib.truck import Truck
 from lib.package import Package
@@ -45,6 +46,8 @@ class Simulation:
             '13', '18', '27', '29', '30', '35', '36', '37', '38', '39', '6',
             '9', '12', '23', '25', '28', '32', '33',
         ]
+
+        self.events = queue.PriorityQueue()
 
 
     def _load_distance_matrix(self, filepath):
@@ -101,22 +104,51 @@ class Simulation:
         del self.package_load_order[:16]
 
         # plot truck delivery routes
-        length = self.truck1.plot_delivery_route(self.packages)
-        length2 = self.truck2.plot_delivery_route(self.packages)
+        self.truck1.plot_delivery_route(self.packages)
+        self.truck2.plot_delivery_route(self.packages)
 
-        print(f"Truck 1 Distance Traveled: {length}")
-        print(f"Truck 2 Distance Traveled: {length2}")
+        truck1_delivery = self.truck1.deliver_packages(self.packages)
+        truck2_delivery = self.truck2.deliver_packages(self.packages)
 
-        self.load_truck(self.truck1, self.package_load_order[:16])
-        del self.package_load_order[:16]
+        t1_first_event = next(truck1_delivery)
+        t2_first_event = next(truck2_delivery)
 
-        length3 = self.truck1.plot_delivery_route(self.packages)
-        print(f"Truck 3 Distance Traveled: {length3}")
+        self.events.put(t1_first_event)
+        self.events.put(t2_first_event)
 
-        total_dist = length + length2 + length3
-        print(f"Total: {total_dist:.2f}")
+        simulation_time = 0
+        total_distance_traveled = 0
+        while simulation_time < 400:
+            if self.events.empty():
+                print("End of events.")
+                print("Distance travelled:", total_distance_traveled)
+                print("\n\n")
+                self.packages.print_all()
+                break
 
-        print(f"Time taken: {total_dist / self.truck1.speed * 60:.2f} minutes")
+            current_event = self.events.get()
+            simulation_time, truck_id, distance, previous_action = current_event
+            total_distance_traveled += distance
+            print(f"Truck: {truck_id} -- {current_event}")
+            
+            if truck_id == 1:
+                active_truck = self.truck1
+                active_delivery = truck1_delivery
+            elif truck_id == 2:
+                active_truck = self.truck2
+                active_delivery = truck2_delivery
+
+            next_time = simulation_time + (distance / active_truck.speed * 60)
+
+            try:
+                next_event = active_delivery.send(next_time)
+            except StopIteration:
+                pass
+            else:
+                self.events.put(next_event)
+        else:
+            msg = "*** End of simulation time: {} events pending ***"
+            print(msg.format(self.events.qsize()))
 
 
 # !---------------------------------------------------------------------------

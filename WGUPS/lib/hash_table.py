@@ -67,6 +67,13 @@ class HashTable:
         
         return False  # not found
 
+    def print_all(self):
+        """Print all items stored in the hash table."""
+
+        for bucket in self.table:
+            for element in bucket:
+                print(element)
+
 
 # !---------------------------------------------------------------------------
 if __name__ == "__main__":
