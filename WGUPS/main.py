@@ -27,13 +27,14 @@ class Simulation:
     def __init__(self, packages_path=None, distances_path=None):
     
         # load data files
+        self.addresses = []
         self.distance_matrix = self._load_distance_matrix(distances_path)
         self.packages = self._load_packages(packages_path)
 
         # trucks -- three available in this project
-        self.truck1 = Truck(id=1)
-        self.truck2 = Truck(id=2)
-        self.truck3 = Truck(id=3)
+        self.truck1 = Truck(id=1, address_list=self.addresses, distance_matrix=self.distance_matrix)
+        self.truck2 = Truck(id=2, address_list=self.addresses, distance_matrix=self.distance_matrix)
+        self.truck3 = Truck(id=3, address_list=self.addresses, distance_matrix=self.distance_matrix)
 
         # package load order -- hardcoded for this project
         # first 16 is picked up by the first truck; second 16 by
@@ -55,7 +56,7 @@ class Simulation:
         with open(filepath, encoding="utf-8") as f:
             reader = csv.reader(f)
 
-            next(reader)  # remove the header row -- we don't need it processed
+            self.addresses = next(reader)[1:]
 
             distance_matrix.extend(row[1:] for row in reader)
 
@@ -100,8 +101,11 @@ class Simulation:
         del self.package_load_order[:16]
 
         # plot truck delivery routes
-        self.truck1.plot_delivery_route(self.packages)
-        self.truck2.plot_delivery_route(self.packages)
+        length = self.truck1.plot_delivery_route(self.packages)
+        length2 = self.truck2.plot_delivery_route(self.packages)
+
+        print(f"Truck 1 Distance Traveled: {length}")
+        print(f"Truck 2 Distance Traveled: {length2}")
 
 
 # !---------------------------------------------------------------------------
