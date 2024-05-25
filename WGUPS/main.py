@@ -107,6 +107,17 @@ class Simulation:
         print(f"Truck 1 Distance Traveled: {length}")
         print(f"Truck 2 Distance Traveled: {length2}")
 
+        self.load_truck(self.truck1, self.package_load_order[:16])
+        del self.package_load_order[:16]
+
+        length3 = self.truck1.plot_delivery_route(self.packages)
+        print(f"Truck 3 Distance Traveled: {length3}")
+
+        total_dist = length + length2 + length3
+        print(f"Total: {total_dist:.2f}")
+
+        print(f"Time taken: {total_dist / self.truck1.speed * 60:.2f} minutes")
+
 
 # !---------------------------------------------------------------------------
 if __name__ == "__main__":
