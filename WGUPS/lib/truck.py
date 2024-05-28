@@ -5,6 +5,7 @@ neighbor algorithm.
 
 
 import collections
+from datetime import datetime, timedelta
 
 
 Event = collections.namedtuple("Event", "time truck_id dist_travelled action")
@@ -17,6 +18,7 @@ class Truck:
         self.id = id
 
         # starting location is the HUB
+        self.hub_address = "4001 South 700 East, Salt Lake City, UT 84107"
         self.location = "4001 South 700 East, Salt Lake City, UT 84107"
 
         self.speed = 18  # avg 18 mph
@@ -35,7 +37,7 @@ class Truck:
     def load_package(self, package_id):
         """Load a package onto the truck for delivery."""
 
-        if len(self.packages) <= self.capacity:
+        if len(self.packages) <= self.capacity and package_id is not None:
             self.packages.append(package_id)
         else:
             # truck is full; cannot load another package
@@ -47,8 +49,8 @@ class Truck:
         from_address_full = [addr for addr in self.address_list
                              if from_address in addr][0]
         to_address_full = [addr for addr in self.address_list
-                             if to_address in addr][0]
-        
+                           if to_address in addr][0]
+
         from_address_index = self.address_list.index(from_address_full)
         to_address_index = self.address_list.index(to_address_full)
 
@@ -93,15 +95,15 @@ class Truck:
         # return to hub after packages are delivered
         dist_to_hub = self.lookup_distance(
             location,
-            "4001 South 700 East, Salt Lake City, UT 84107"
+            self.hub_address,
         )
         
-        self.route.append(("4001 South 700 East, Salt Lake City, UT 84107", dist_to_hub, None))
+        # self.route.append(("4001 South 700 East, Salt Lake City, UT 84107", dist_to_hub, None))
         distance_traveled += dist_to_hub
 
         return distance_traveled
 
-    def deliver_packages(self, package_table, start_time=0):
+    def deliver_packages(self, package_table, start_time=datetime.now().replace(hour=8, minute=0)):
         """Deliver packages by visiting each address in the plotted route.
         Yield to the simulator issuing events to allow other trucks to deliver
         packages as well.
@@ -109,11 +111,21 @@ class Truck:
 
         time = yield Event(start_time, self.id, 0, "Leaving the HUB")
         for address, distance, pkg_id in self.route:
-            # TODO: handle package delivery
+            time_to_address =  timedelta(minutes=(distance / self.speed * 60))
+            new_sim_time = time + time_to_address
+            self.location = address
             if pkg_id is not None:
                 pkg = package_table.lookup(pkg_id)
-                pkg.status = f"DELIVERED {time}"
-            time = yield Event(time, self.id, distance, f"Dropped off package at {address}")
+                pkg.status = f"DELIVERED {datetime.strftime(new_sim_time, '%H:%M')}"
+                self.packages.pop(
+                    self.packages.index(pkg_id)
+                )
+            time = yield Event(new_sim_time, self.id, distance, f"Dropped off package {pkg_id} at {address}")
+        
+        dist_to_hub = self.lookup_distance(self.location, self.hub_address)
+        time_to_hub = timedelta(minutes=(dist_to_hub / self.speed * 60))
+        self.location = self.hub_address
+        time = yield Event(time + time_to_hub, self.id, dist_to_hub, "Returned to the HUB")
 
 
 # !---------------------------------------------------------------------------
