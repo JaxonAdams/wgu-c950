@@ -23,7 +23,7 @@ class Package:
     # custom string representation of a package instance
     def __repr__(self):
         
-        return f"<Package {self.id}, status={self.status}>"
+        return f"<Package {self.id:0>2}, status={self.status}>"
 
     
 # !---------------------------------------------------------------------------

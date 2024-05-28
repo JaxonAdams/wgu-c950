@@ -14,6 +14,7 @@ Student ID: 011441603
 
 import csv
 import queue
+from datetime import datetime, timedelta
 
 from lib.truck import Truck
 from lib.package import Package
@@ -41,10 +42,11 @@ class Simulation:
         # first 16 is picked up by the first truck; second 16 by
         #   the second truck, etc.
         self.package_load_order = [
-            '1', '4', '11', '14', '15', '16', '17', '19', '20', '21', '22',
+            '1', '6', '11', '14', '15', '16', '17', '19', '20', '21', '22',
             '24', '26', '31', '34', '40', '2', '3', '5', '7', '8', '10',
-            '13', '18', '27', '29', '30', '35', '36', '37', '38', '39', '6',
-            '9', '12', '23', '25', '28', '32', '33',
+            '13', '18', '27', '29', '30', '35', '36', '37', '38', '39', '4',
+            '12', '23', '25', '28', '32', '33', None, None, None, None, None,
+            None, None, None, None, '9',
         ]
 
         self.events = queue.PriorityQueue()
@@ -94,34 +96,77 @@ class Simulation:
         for package_id in package_list:
             truck.load_package(package_id)
 
+    def prep_delivery(self, truck):
+        """Prepare a delivery trip by loading packages onto a truck and
+        plotting the delivery route.
+        """
+
+        truck.route = []
+        truck.packages = []
+
+        self.load_truck(truck, self.package_load_order[:16])
+        del self.package_load_order[:16]
+
+        truck.plot_delivery_route(self.packages)
+
     def run(self):
 
         # load trucks
-        self.load_truck(self.truck1, self.package_load_order[:16])
-        del self.package_load_order[:16]
+        self.prep_delivery(self.truck1)
+        self.prep_delivery(self.truck2)
 
-        self.load_truck(self.truck2, self.package_load_order[:16])
-        del self.package_load_order[:16]
+        active_deliveries = []
+        # self.load_truck(self.truck1, self.package_load_order[:16])
+        # del self.package_load_order[:16]
 
-        # plot truck delivery routes
-        self.truck1.plot_delivery_route(self.packages)
-        self.truck2.plot_delivery_route(self.packages)
+        # self.load_truck(self.truck2, self.package_load_order[:16])
+        # del self.package_load_order[:16]
 
-        truck1_delivery = self.truck1.deliver_packages(self.packages)
-        truck2_delivery = self.truck2.deliver_packages(self.packages)
+        # # plot truck delivery routes
+        # self.truck1.plot_delivery_route(self.packages)
+        # self.truck2.plot_delivery_route(self.packages)
 
-        t1_first_event = next(truck1_delivery)
-        t2_first_event = next(truck2_delivery)
+        start_time = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
 
-        self.events.put(t1_first_event)
-        self.events.put(t2_first_event)
+        # truck1_delivery = self.truck1.deliver_packages(
+        #     self.packages,
+        #     start_time=start_time,
+        # )
+        # truck2_delivery = self.truck2.deliver_packages(
+        #     self.packages,
+        #     start_time=start_time + timedelta(minutes=26),
+        # )
 
-        simulation_time = 0
+        active_deliveries.append(
+            self.truck1.deliver_packages(
+                self.packages,
+                start_time=start_time,
+            )
+        )
+
+        active_deliveries.append(
+            self.truck2.deliver_packages(
+                self.packages,
+                start_time=start_time + timedelta(minutes=26),
+            )
+        )
+
+        # t1_first_event = next(truck1_delivery)
+        # t2_first_event = next(truck2_delivery)
+        
+        # self.events.put(t1_first_event)
+        # self.events.put(t2_first_event)
+
+        for delivery_proc in active_deliveries:
+            self.events.put(next(delivery_proc))
+
         total_distance_traveled = 0
-        while simulation_time < 400:
+        simulation_time = start_time
+        while simulation_time < datetime.now().replace(hour=17, minute=0):
             if self.events.empty():
                 print("End of events.")
-                print("Distance travelled:", total_distance_traveled)
+                print(f"Distance travelled: {total_distance_traveled:.2f} mi")
+                print("Simulation end time:", simulation_time.strftime("%H:%M"))
                 print("\n\n")
                 self.packages.print_all()
                 break
@@ -130,25 +175,35 @@ class Simulation:
             simulation_time, truck_id, distance, previous_action = current_event
             total_distance_traveled += distance
             print(f"Truck: {truck_id} -- {current_event}")
-            
+                
             if truck_id == 1:
                 active_truck = self.truck1
-                active_delivery = truck1_delivery
+                active_delivery = active_deliveries[0]
             elif truck_id == 2:
                 active_truck = self.truck2
-                active_delivery = truck2_delivery
+                active_delivery = active_deliveries[1]
 
-            next_time = simulation_time + (distance / active_truck.speed * 60)
+            if (previous_action == "Returned to the HUB"
+                and not len(active_truck.packages)
+                and len(self.package_load_order)):
+                self.prep_delivery(active_truck)
+                new_delivery = active_truck.deliver_packages(
+                    self.packages,
+                    start_time=simulation_time,
+                )
+                if truck_id == 1:
+                    delivery_index = 0
+                elif truck_id == 2:
+                    delivery_index = 1
+                active_deliveries[delivery_index] = new_delivery
+                self.events.put(next(new_delivery))
 
             try:
-                next_event = active_delivery.send(next_time)
+                next_event = active_delivery.send(simulation_time)
             except StopIteration:
                 pass
             else:
                 self.events.put(next_event)
-        else:
-            msg = "*** End of simulation time: {} events pending ***"
-            print(msg.format(self.events.qsize()))
 
 
 # !---------------------------------------------------------------------------
