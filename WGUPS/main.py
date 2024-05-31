@@ -52,6 +52,10 @@ class Simulation:
         # priority queue will be ordered by the simulation time, or how many minutes since the start of the day
         self.events = queue.PriorityQueue()
 
+        # set the simulation start and end times
+        self.simulation_start_time = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+        self.simulation_end_time = self._prompt_for_end_time()
+
 
     def _load_distance_matrix(self, filepath):
         """Read the given file for a matrix of distances between delivery
@@ -96,6 +100,38 @@ class Simulation:
                 package_hash.insert(package.id, package)
 
         return package_hash
+    
+    def _prompt_for_end_time(self):
+        """Prompt the user for the time the simulation should end. 5:00pm by default."""
+
+        print("Enter simulation stop time [5:00 PM]", end=" >> ")
+        user_input = input()
+
+        # set time to 5:00 PM by default
+        if user_input == "":
+            stop_time = datetime.strptime("5:00 PM", "%I:%M %p")
+        else:
+            # create a datetime instance from the user's input
+            try:
+                stop_time = datetime.strptime(user_input, "%I:%M %p")
+            except ValueError:  # invalid input time
+                print("\nInvalid format: please use the format '%I:%M %p', like 10:35 AM\n")
+                return self._prompt_for_end_time()
+
+        stop_datetime = datetime.today().replace(
+            hour=stop_time.hour,
+            minute=stop_time.minute,
+            second=0,
+            microsecond=0,
+        )
+
+        # make sure the end time is on or after the start time
+        if stop_datetime < self.simulation_start_time:
+            print("\nPlease enter a time after 8:00 AM\n")
+            return self._prompt_for_end_time()
+
+        print("\n")
+        return stop_datetime
 
     def load_truck(self, truck, package_list):
         """Load the given truck with a group of packages."""
@@ -132,8 +168,8 @@ class Simulation:
         # an active delivery is a Truck.deliver_packages() coroutine
         active_deliveries = []
 
-        # starting the day at 8:00 AM by default
-        start_time = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
+        # starting the day at 8:00 AM
+        start_time = self.simulation_start_time
 
         # append package delivery coroutines to our list of active deliveries
         active_deliveries.append(
@@ -156,7 +192,7 @@ class Simulation:
         # simulation event loop -- processes events queued up in our events priority queue
         total_distance_traveled = 0
         simulation_time = start_time
-        while simulation_time < datetime.now().replace(hour=17, minute=0):
+        while simulation_time < self.simulation_end_time:
 
             # no more events; simulation finished before EOD (5:00 PM)
             if self.events.empty():
@@ -214,8 +250,15 @@ class Simulation:
                 self.events.put(next_event)
 
         # print the total milage traveled by all trucks
-        print("Simulation end time:", simulation_time.strftime("%I:%M %p"))
+        end_time = max([simulation_time, self.simulation_end_time]).strftime("%I:%M %p")
+
+        print("Simulation ended at:", end_time)
         print(f"Distance travelled: {total_distance_traveled:.2f} mi")
+
+        # print the status of all packages
+        print("\nAll packages:")
+        self.packages.print_all()
+
 
 # !---------------------------------------------------------------------------
 if __name__ == "__main__":
