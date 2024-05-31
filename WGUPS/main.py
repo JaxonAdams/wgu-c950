@@ -282,3 +282,12 @@ if __name__ == "__main__":
     )
 
     program.run()
+
+    # program flow:
+    #   Simulation-related data is loaded/initialized
+    #   Each of the two trucks are prepped to make a delivery
+    #     (packages loaded onto truck, route plotted, etc.)
+    #   First events from each delivery added to an "events" priority queue
+    #   Events are consumed and processed in an event loop
+    #     (each event may add a subsequent event to the event loop, continuing the simulation)
+    #   End-of-simulation data is printed (package statuses, miles traveled)
