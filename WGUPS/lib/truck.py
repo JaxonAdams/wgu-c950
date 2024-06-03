@@ -42,7 +42,8 @@ class Truck:
             
             # update package status
             package = package_table.lookup(package_id)
-            package.status = f"EN ROUTE, ON TRUCK {self.id}"
+            package.status = f"EN ROUTE"
+            package.truck = self.id
         else:
             # truck is full; cannot load another package
             return False
@@ -149,6 +150,7 @@ class Truck:
                 #   from the truck's list of loaded packages
                 pkg = package_table.lookup(pkg_id)
                 pkg.status = f"DELIVERED {datetime.strftime(new_sim_time, '%H:%M %p')}"
+                pkg.truck = None
                 
                 self.packages.pop(
                     self.packages.index(pkg_id)
