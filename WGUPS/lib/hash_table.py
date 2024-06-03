@@ -70,9 +70,20 @@ class HashTable:
     def print_all(self):
         """Print all items stored in the hash table."""
 
+        # print header row
+        print()
+        print(f"PACKAGE ID        DEADLINE                    STATUS")
+        print("==================================================== ")
+        print()
+
+        # print package deadline & status for each package
+        packages = []
         for bucket in self.table:
             for element in bucket:
-                print(element)
+                packages.append(element)
+
+        for package in sorted(packages, key=lambda pkg: int(pkg.id)):
+            print(str(package))
 
 
 # !---------------------------------------------------------------------------

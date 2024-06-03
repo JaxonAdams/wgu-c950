@@ -24,6 +24,10 @@ class Package:
     def __repr__(self):
         
         return f"<Package {self.id:0>2}, status={self.status}>"
+    
+    def __str__(self):
+
+        return f"Package {self.id:0>2} {self.deadline:>15} {self.status:>25}"
 
     
 # !---------------------------------------------------------------------------

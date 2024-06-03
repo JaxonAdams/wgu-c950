@@ -148,7 +148,7 @@ class Truck:
                 # handle package delivery by updating the package status and removing it
                 #   from the truck's list of loaded packages
                 pkg = package_table.lookup(pkg_id)
-                pkg.status = f"DELIVERED {datetime.strftime(new_sim_time, '%H:%M')}"
+                pkg.status = f"DELIVERED {datetime.strftime(new_sim_time, '%H:%M %p')}"
                 
                 self.packages.pop(
                     self.packages.index(pkg_id)
