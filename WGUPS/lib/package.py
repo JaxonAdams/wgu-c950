@@ -20,6 +20,7 @@ class Package:
         self.deadline = deadline
         self.status = "AT THE HUB"
         self.truck = None
+        self.trip_number = None
 
     # custom string representation of a package instance
     def __repr__(self):
@@ -28,7 +29,7 @@ class Package:
     
     def __str__(self):
 
-        return f"Package {self.id:0>2} {self.deadline:>15} {self.status:>20} {self.truck or 'N/A':>8} {self.address:>40}"
+        return f"Package {self.id:0>2} {self.deadline:>15} {self.status:>20} {self.truck or 'N/A':>8} {self.trip_number or 'N/A':>8} {self.address:>40}"
 
     
 # !---------------------------------------------------------------------------

@@ -48,6 +48,8 @@ class Simulation:
             '9',                                                                                           # trip 4
         ]
 
+        self.trip_number = 0
+
         # a priority queue will hold the simulation events; i.e. truck leaves HUB or truck delivers package
         # priority queue will be ordered by the simulation time, or how many minutes since the start of the day
         self.events = queue.PriorityQueue()
@@ -138,8 +140,9 @@ class Simulation:
 
         # logic for loading a single package onto a truck is contained
         #   in the Truck class definition
+        self.trip_number += 1
         for package_id in package_list:
-            truck.load_package(package_id, self.packages)
+            truck.load_package(package_id, self.packages, self.trip_number)
 
     def prep_delivery(self, truck):
         """Prepare a delivery trip by loading packages onto a truck and

@@ -72,8 +72,8 @@ class HashTable:
 
         # print header row
         print()
-        print(f"PACKAGE ID        DEADLINE               STATUS    TRUCK                                  ADDRESS")
-        print("================================================================================================= ")
+        print(f"PACKAGE ID        DEADLINE               STATUS    TRUCK     TRIP                                 ADDRESS")
+        print("========================================================================================================= ")
         print()
 
         # print package deadline & status for each package

@@ -34,7 +34,7 @@ class Truck:
 
         return f"<Truck {self.id}, load={len(self.packages)}, cap={self.capacity}>"
 
-    def load_package(self, package_id, package_table):
+    def load_package(self, package_id, package_table, trip_num):
         """Load a package onto the truck for delivery."""
 
         if len(self.packages) <= self.capacity and package_id is not None:
@@ -44,6 +44,7 @@ class Truck:
             package = package_table.lookup(package_id)
             package.status = f"EN ROUTE"
             package.truck = self.id
+            package.trip_number = trip_num
         else:
             # truck is full; cannot load another package
             return False
@@ -150,7 +151,6 @@ class Truck:
                 #   from the truck's list of loaded packages
                 pkg = package_table.lookup(pkg_id)
                 pkg.status = f"DELIVERED {datetime.strftime(new_sim_time, '%H:%M %p')}"
-                pkg.truck = None
                 
                 self.packages.pop(
                     self.packages.index(pkg_id)
