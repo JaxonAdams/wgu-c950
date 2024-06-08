@@ -45,6 +45,10 @@ class Truck:
             package.status = f"EN ROUTE"
             package.truck = self.id
             package.trip_number = trip_num
+
+            # package #9 (incorrect address) -- update to correct address when loaded
+            if package_id == "9":
+                package.address = "410 S State St"
         else:
             # truck is full; cannot load another package
             return False

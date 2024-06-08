@@ -208,8 +208,6 @@ class Simulation:
             simulation_time, truck_id, distance, previous_action = current_event
             total_distance_traveled += distance
 
-            # print(f"Truck: {truck_id} -- {current_event}")
-
             # determine which truck this delivery event belongs to
             if truck_id == 1:
                 active_truck = self.truck1
