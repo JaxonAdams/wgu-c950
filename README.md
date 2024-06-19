@@ -3,7 +3,7 @@
 This code repository contains a few labs and my final project for C950.
 The final project is a discrete event simulation of the delivery of several packages by a delivery company, WGUPS. It features the "nearest neighbor" algorithm for truck routing, a simple algorithm which plots a sufficiently optimal path between all the nodes in a graph.
 
-A copy of the full project requirements is listed below. The planning phase of this project and a project retrospective can be found in the files "wgups_planning/Task 1 - Planning.docx" and "WGUPS/Task 2 - Retrospective.docx" respectively.
+A full copy of the project requirements is listed below. The planning phase of this project and a project retrospective can be found in the files "wgups_planning/Task 1 - Planning.docx" and "WGUPS/Task 2 - Retrospective.docx" respectively.
 
 ## SCENARIO
 This task is the implementation phase of the WGUPS Routing Program.
